@@ -14,7 +14,7 @@
 
 typedef struct {
     int from;
-    char symbol;   /* 'e' represents epsilon */
+    char symbol;   
     int to;
 } Transition;
 
@@ -25,11 +25,11 @@ int start_state;
 int final_states[MAX_STATES];
 int n_finals;
 
-/* epsilon-closure adjacency list */
+
 int eclosure[MAX_STATES][MAX_STATES];
 int eclosure_computed[MAX_STATES] = {0};
 
-/* ---------- Task 1: Read the NFA ---------- */
+
 void readNFA() {
     int i;
     
@@ -99,7 +99,7 @@ void readNFA() {
     }
 }
 
-/* DFS for epsilon-closure computation */
+
 void dfs_epsilon(int state, int current, int visited[]) {
     int i;
     visited[current] = 1;
@@ -113,7 +113,7 @@ void dfs_epsilon(int state, int current, int visited[]) {
     }
 }
 
-/* ---------- Task 2: Compute epsilon-closure ---------- */
+
 void computeEclosure() {
     int i, j;
     int visited[MAX_STATES];
@@ -124,13 +124,13 @@ void computeEclosure() {
             visited[j] = 0;
         }
         
-        // Include the state itself
+
         eclosure[i][i] = 1;
         
-        // DFS to find all epsilon-reachable states
+
         dfs_epsilon(i, i, visited);
         
-        // Mark reachable states in eclosure matrix
+
         for (j = 0; j < n_states; j++) {
             if (visited[j]) {
                 eclosure[i][j] = 1;
@@ -139,28 +139,28 @@ void computeEclosure() {
     }
 }
 
-/* ---------- Task 3: New transitions without epsilon ---------- */
+
 void computeNewTransitions() {
     int i, j, k, s;
-    int reachable[MAX_STATES];  // Moved outside loops
+    int reachable[MAX_STATES];  
     
     printf("\nNew transitions (without epsilon):\n");
     
     for (i = 0; i < n_states; i++) {
         for (s = 0; s < n_symbols; s++) {
-            // Initialize reachable array
+
             for (j = 0; j < n_states; j++)
                 reachable[j] = 0;
             
-            // For each state in epsilon-closure of i
+
             for (j = 0; j < n_states; j++) {
                 if (eclosure[i][j]) {
-                    // Find transitions on symbol s from j
+
                     for (k = 0; k < n_transitions; k++) {
                         if (transitions[k].from == j &&
                             transitions[k].symbol == symbols[s]) {
                             int to = transitions[k].to;
-                            // Add epsilon-closure of 'to' to reachable
+
                             for (int x = 0; x < n_states; x++) {
                                 if (eclosure[to][x]) {
                                     reachable[x] = 1;
@@ -171,7 +171,7 @@ void computeNewTransitions() {
                 }
             }
             
-            // Print all reachable states
+
             for (j = 0; j < n_states; j++) {
                 if (reachable[j]) {
                     printf("δ'(%d, %c) = %d\n", i, symbols[s], j);
@@ -181,7 +181,7 @@ void computeNewTransitions() {
     }
 }
 
-/* ---------- Task 4: New final states ---------- */
+
 void computeNewFinalStates() {
     int i, j;
     int is_final[MAX_STATES] = {0};
@@ -205,7 +205,7 @@ void computeNewFinalStates() {
     printf("}\n");
 }
 
-/* ---------- Task 5: Display automaton ---------- */
+
 void displayEclosure() {
     int i, j;
     printf("\nEpsilon-closure:\n");
